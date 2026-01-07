@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    // File Layout
+    //  "rootDir": "./src",
+    //  "outDir": "./dist",
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "target": "ES2023",
+    "strict": true,
+    "esModuleInterop": true,
+    "ignoreDeprecations": "5.0",
+
+    //แก้ rootDir ให้ครอบคลุม
+    "rootDir": ".",
+    "outDir": "dist"
+
+    //ถ้า prisma.config.ts ไม่จำเป็นต้อง compile
+    //"exclude": ["prisma.config.ts"],
+
+    //หรือถ้าอยู่หลายไฟล์
+    //  "exclude": ["**/*.config.ts"],
+
+    //include ให้เฉพาะ src
+    //  "include": ["src/**/*"]
+  }
+}

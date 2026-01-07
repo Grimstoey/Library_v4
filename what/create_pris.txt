@@ -1,0 +1,60 @@
+✨ Prisma คือ ORM (Object Relational Mapper)
+หน้าที่ของมันคือช่วยให้เรา คุยกับฐานข้อมูลด้วย TypeScript/JavaScript แทนการเขียน SQL ตรง ๆ
+
+โดย Prisma จะมี 3 ส่วนหลัก
+1. Prisma Client – ใช้ในโค้ดเพื่อ query DB
+2. Prisma Schema – ไฟล์กำหนดโครงสร้าง DB
+3. Migration – จัดการ version ของ DB
+
+====== ขั้นตอน ======
+1️⃣ ติดตั้ง Prisma
+----> npm install prisma --save-dev
+
+2️⃣ สร้าง Prisma ครั้งแรก (init)
+----> npx prisma init
+จะได้โฟลเดอร์และไฟล์ใหม่ prisma/schema.prisma
+
+3️⃣ ตั้งค่า Database ใน .env
+----> DATABASE_URL="postgres://admin:admin123@localhost:5432/library_v4?schema=public"
+
+4️⃣ เขียน Prisma Schema ในไฟล์ schema.prisma
+
+5️⃣ สร้าง Database + Migration
+----> npx prisma migrate dev --name init
+สิ่งที่เกิดขึ้น
+-> สร้างตารางใน DB ตาม schema ที่กำหนดไว้
+-> สร้าง Prisma Client
+-> มีโฟลเดอร์ prisma/migrations
+
+6️⃣ รันคำสั่ง generate 
+----> npx prisma generate
+Prisma จะ:
+-> สร้าง src/generated/
+-> สร้างไฟล์ทั้งหมดข้างในให้เอง ตำแหน่งของมันขึ้นกับ output ใน schema.prisma
+
+7️⃣ ติดตั้ง Prisma Client (บางครั้ง migrate ทำให้แล้ว แต่ติดตั้งเองชัดเจนกว่า)
+----> npm install @prisma/client
+
+///////////////////////////////////////////////////////////////////////////////
+
+สร้างไฟล์ seed จากนั้นนำข้อมูลไปใส่ลงใน db โดยใช้คำสั่ง
+----> npx tsx prisma/seed.ts
+
+✔️ แก้ seed → รัน tsx ได้เลย
+❌ ไม่แตะ schema → ไม่ต้อง generate
+⚠️ ถ้าเคย seed แล้ว → เคลียร์ข้อมูลก่อน
+
+
+///////////////////////////////////////////////////////////////////////////////
+
+เมื่อคุณรันคำสั่งนี้ 👇
+----> npx prisma migrate reset
+
+Prisma จะทำตามลำดับนี้:
+
+❌ ลบข้อมูลทั้งหมดในฐานข้อมูล
+🔄 รีเซ็ต auto-increment / sequence (id กลับไปเริ่มใหม่)
+📂 อ่านไฟล์ migration เดิมทั้งหมด ที่อยู่ใน prisma/migrations/
+▶️ รัน migration ทุกไฟล์ใหม่ตั้งแต่ต้น
+🌱 รัน seed script (prisma/seed.ts) ถ้าคุณตั้งค่าไว้
+

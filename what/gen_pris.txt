@@ -1,0 +1,119 @@
+📁 generated 
+  คือ Prisma Client ที่ถูกสร้างอัตโนมัติจาก schema.prisma
+ทำหน้าที่เป็น “ตัวกลาง” ระหว่างโค้ด TypeScript กับฐานข้อมูล รวบรวม method ต่าง ๆ
+เพื่ออำนวยความสะดวกในการใช้งาน database แต่ไม่ใช่แค่ความสะดวกเพียงอย่างเดียว
+มันยังทำหน้าที่เป็น สัญญา (contract) ระหว่างโค้ดกับ DB
+  เป็น Database SDK ที่ Prisma สร้างให้คุณอัตโนมัติ
+เพื่อให้คุณใช้งาน DB ได้ง่าย ปลอดภัย และตรงกับ schema
+
+👉 Database SDK (Software Development Kit)
+คือ ชุดเครื่องมือ + method + type
+ที่ทำให้โปรแกรมของเรา “คุยกับฐานข้อมูลได้ง่ายและปลอดภัย”
+โดยไม่ต้องเขียนคำสั่งระดับล่างเอง (เช่น SQL)
+
+
+====== หน้าที่หลักของ generated ======
+1️⃣ เป็น Prisma Client
+ใน generated จะมีคลาสนี้
+---> export class PrismaClient { ... }
+
+การเรียกใช้
+---> const prisma = new PrismaClient();
+👉 นี่คือ object ที่เอาไว้
+-> findMany
+-> findUnique
+-> create
+-> update
+-> delete
+
+
+2️⃣ สร้าง API ตาม model ของคุณ
+ถ้าใน schema.prisma มี
+
+model Book {
+  id    Int
+  title String
+}
+
+ใน generated จะมี
+-> prisma.book.findMany()
+-> prisma.book.create()
+👉 model ไหนมี → method จะถูกสร้างให้ทันที
+👉 เหมือน REST API แต่เป็น Database API
+
+
+3️⃣ ให้ Type Safety (ป้องกันการเขียนผิด)
+generated จะสร้าง
+-> Type
+-> Interface
+-> Enum
+
+เช่น:
+
+Book
+Prisma.BookCreateInput
+Prisma.BookWhereInput
+
+ผลลัพธ์คือ:
+-> IDE autocomplete
+-> เขียนผิด → compile error
+-> Query ผิด structure → รู้ตั้งแต่ยังไม่รัน
+
+
+4️⃣ เป็นตัวแปลงคำสั่ง TypeScript → SQL
+
+คุณเขียน:
+
+await prisma.book.findMany({
+  where: { title: { contains: "Harry" } }
+});
+
+Prisma Client (ใน generated) จะ:
+-> แปลงเป็น SQL
+-> ส่งไป DB
+-> แปลงผลลัพธ์กลับเป็น object
+
+TypeScript Object
+        ↓
+      SQL
+        ↓
+   Database Result
+
+
+📌 ลำดับการไหลของการเรียกส่วนต่างๆ
+
+Route / Controller
+        ↓
+Service (logic)
+        ↓
+Repository (เรียก prisma)
+        ↓
+Prisma Client (generated)
+        ↓
+Database
+
+
+5️⃣ คุมความสัมพันธ์ (relations)
+
+ถ้า schema มี relation:
+
+model Borrow {
+  book   Book @relation(...)
+}
+
+คุณเขียน:
+
+prisma.borrow.findMany({
+  include: { book: true }
+});
+
+👉 generated จะรู้หมดว่า join ยังไง
+
+
+///////////////////////////////
+
+❌ สิ่งที่ไม่ควรทำ ❌
+-> ห้ามแก้ไฟล์ข้างใน
+-> ห้ามเขียน business logic
+-> ห้าม commit ลง git (แนะนำ)
+👉 เป็นของที่ “ต้องมี” แต่ “ไม่ต้องแตะ”

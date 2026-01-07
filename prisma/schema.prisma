@@ -1,0 +1,79 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+// "../src/generated/prisma" ---> path นี้ยังไม่ต้องมีอยู่จริงตอนสร้างใหม่ๆ กำหนดล่วงหน้าเพื่อบอกว่าเมื่อ gen เสร็จแล้วให้ไปอยู่ที่นี่
+
+datasource db {
+  provider = "postgresql"
+}
+
+
+
+//กำหนดรูปแบบการเก็บข้อมูลใน db ว่ามีอะไรบ้าง
+
+model Author {
+  id        Int     @id @default(autoincrement())
+  firstName String
+  lastName  String
+  affiliation String
+
+  books     Book[]
+}
+
+model Book {
+  id        Int     @id @default(autoincrement())
+  title     String
+  isbn      String  @unique
+  category  String
+
+  status    BookStatus @default(AVAILABLE)
+
+  authorId  Int
+  author    Author  @relation(fields: [authorId], references: [id])
+
+  borrowItems BorrowItem[]
+}
+
+model Member {
+  id          Int     @id @default(autoincrement())
+  memberCode  String  @unique
+  firstName   String
+  lastName    String
+  phoneNumber String
+
+  borrows     Borrow[]
+}
+
+model Borrow {
+  id        Int      @id @default(autoincrement())
+  memberId  Int
+  member    Member   @relation(fields: [memberId], references: [id])
+  borrowDate DateTime @default(now())
+
+  items     BorrowItem[]
+}
+
+model BorrowItem {
+  id          Int      @id @default(autoincrement())
+  borrowId    Int
+  bookId      Int
+
+  dueDate     DateTime   // กำหนดเวลาการคืน
+  returnedAt  DateTime?  // เวลาคืนจริง (null = ยังไม่คืน)
+
+  borrow     Borrow   @relation(fields: [borrowId], references: [id])
+  book       Book     @relation(fields: [bookId], references: [id])
+}
+
+enum BookStatus {
+  AVAILABLE
+  BORROWED
+}

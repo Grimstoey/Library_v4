@@ -1,0 +1,66 @@
+🔎 ใน prisma\seed.ts จะมีการ
+import {
+  clearData,
+  seedAuthors,
+  seedBooks,
+  seedMembers,
+  seedBorrows,
+} from "../src/db"; 👈 สังเกตตรงนี้จะเห็นว่ามีแค่ชื่อโฟเดอร์ db เท่านั้น ไม่มีการ import ไฟล์อื่นเลย 
+                        แต่สามารถเข้าถึงการ export ของไฟล์อื่นๆได้
+
+    
+🌟 นั่นเป็นเพราะว่า ในโฟลเดอร์ db มีไฟล์ชื่อ 📄 index.ts
+JavaScript / TypeScript จะมองหาไฟล์นี้อัตโนมัติ
+
+src/
+ └─ db/
+    ├─ index.ts      👈 ตัวเอก
+    ├─ clearData.ts
+    ├─ seedAuthors.ts
+    ├─ seedBooks.ts
+    ├─ seedMembers.ts
+    └─ seedBorrows.ts
+
+
+📌 เวลาเขียนแบบนี้
+import { clearData } from "../src/db";
+
+สิ่งที่ runtime ทำคือ
+
+Step 1️⃣ เห็นว่า db เป็นโฟลเดอร์
+
+มันจะถามว่า
+👉 “ในโฟลเดอร์นี้ มี index.js / index.ts ไหม?”
+
+Step 2️⃣ เจอ db/index.ts
+👉 ระบบจะโหลดไฟล์นี้ทันที
+
+จึงทำให้สามารถเรียก clearData ได้
+เพราะใน index.ts คุณเขียนไว้แบบนี้ 
+👇
+export * from "./clearData";
+export * from "./seedAuthors";
+export * from "./seedBooks";
+export * from "./seedMembers";
+export * from "./seedBorrows";
+
+“อะไรก็ตามที่ไฟล์พวกนี้ export ออกมา
+ได้เอามา export ต่อที่ db/index.ts ด้วย”
+
+ดังนั้น…
+👇
+clearData.ts ─┐
+seedAuthors.ts│
+seedBooks.ts  ├─► index.ts ──► ../src/db
+seedMembers.ts│
+seedBorrows.ts┘
+
+
+💥 ถ้าไม่มี index.ts
+คุณจะต้องเขียนยาว ๆ แบบนี้แทน 😩
+import { clearData } from "../src/db/clearData";
+import { seedAuthors } from "../src/db/seedAuthors";
+
+
+🌟 index.ts ทำหน้าที่เป็น ประตูรวม export
+รูปแบบนี้เรียกว่า Barrel Pattern
