@@ -1,4 +1,5 @@
 import express from "express";
+import { bookService } from "./services/bookService";
 
 
 const app = express();
@@ -11,10 +12,39 @@ app.get("/", (req, res) => {
 });
 
 
+// ======== Endpoint ========
+
+// 📚 Books
+app.get("/books", async(req, res) => 
+{
+  const {title} = req.query;
+  if(title && typeof title === "string")
+  {
+    const books = await bookService.searchByTitleService(title);
+
+    if(books.length != 0)
+    {
+      res.json(books);
+    }
+    else
+    {
+      res.send("❌ There is no book you are looking for.");
+    }
+    
+  }
+  else
+  {
+    const books = await bookService.getAllBooksService();
+    res.json(books);
+  }
+  
+});
 
 
 
-////Port
+
+
+//// เรียก Port
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
