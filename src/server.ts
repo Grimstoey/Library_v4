@@ -1,5 +1,6 @@
 import express from "express";
 import { bookService } from "./services/bookService";
+import { authorService } from "./services/authorService";
 
 
 const app = express();
@@ -40,7 +41,13 @@ app.get("/books", async(req, res) =>
   
 });
 
+// ✍ Authors
+app.get("/authors", async(req, res) =>
+{
+  const authors = await authorService.getAllAuthorsService();
 
+  res.json(authors);
+});
 
 
 
