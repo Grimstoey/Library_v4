@@ -1,0 +1,38 @@
+✨ Prisma.BookWhereInput คือ type ที่บอกว่า “เราสามารถ filter ตาราง Book ได้ด้วยเงื่อนไขแบบไหนบ้าง”
+
+มาจากใน schema.prisma 👇
+
+        model Book {
+        id        Int     @id @default(autoincrement())
+        title     String
+        isbn      String  @unique
+        category  String
+
+        status    BookStatus @default(AVAILABLE)
+
+        authorId  Int
+        author    Author  @relation(fields: [authorId], references: [id])
+
+        borrowItems BorrowItem[]
+        }
+
+
+Prisma จะเอา model นี้ไป generate เป็น:
+
+export type BookWhereInput = {
+  AND?: BookWhereInput | BookWhereInput[]
+  OR?: BookWhereInput[]
+  NOT?: BookWhereInput | BookWhereInput[]
+
+  id?: IntFilter | number
+  title?: StringFilter | string
+  category?: StringFilter | string
+
+  author?: AuthorRelationFilter
+  borrowItems?: BorrowItemListRelationFilter
+}
+
+
+✨ Prisma.WhereInput คือวิธีที่เราใช้ “บอกเงื่อนไขการค้นหา” ให้ Prisma
+ไม่ว่าจะซับซ้อนแค่ไหน (มี AND / OR / ความสัมพันธ์หลายตาราง)
+Prisma จะเอาเงื่อนไขเหล่านี้ไปแปลงเป็นคำสั่ง SQL ที่ถูกต้องให้เราอัตโนมัติ

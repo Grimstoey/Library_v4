@@ -1,17 +1,22 @@
-import {bookRepository} from "../repositories/bookRepository"
-
+import { bookRepository } from "../repositories/bookRepository";
+import { BookSearchQuery } from "../types/book-search.type";
 
 export const bookService = {
 
-    // แสดงหนังสือทั้งหมด
-    async getAllBooksService()
-    {
-        return bookRepository.getAllBooksDB();
-    },
+  /*
+    ค้นหาหนังสือ (รองรับทุกเงื่อนไข)
+    - title
+    - category
+    - author
+    - member
+    - keyword
+   */
+  async searchBooksService(
+    query: BookSearchQuery,
+    pageSize: number = 10,
+    pageNo: number = 1
+  ) {
+    return bookRepository.searchBooksDb(query, pageSize, pageNo);
+  },
 
-    // แสดงหนังสือตามรายชื่อที่ค้นหา
-    async searchByTitleService(title : string)
-    {
-        return bookRepository.searchByTitleDB(title);
-    }
 };

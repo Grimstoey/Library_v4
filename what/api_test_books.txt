@@ -1,0 +1,57 @@
+1️⃣ Books
+Route: /books
+Method: GET
+
+แสดงหนังสือทั้งหมด (pagination เริ่มต้น pageNo=1, pageSize=10)
+http://localhost:3000/books
+
+ค้นหาหนังสือด้วย keyword "Animal"
+http://localhost:3000/books?keyword=Animal
+
+หน้า 2, แสดง 5 เล่มต่อหน้า
+http://localhost:3000/books?pageNo=2&pageSize=5
+
+ค้นหา Harry, หน้า 1, 3 เล่มต่อหน้า
+http://localhost:3000/books?keyword=Harry&pageNo=1&pageSize=3
+
+
+
+2️⃣ Books – ค้นหาแบบระบุ field (Advanced Search)
+Route: /books
+Method: GET
+
+ค้นหาเฉพาะ ชื่อหนังสือ
+http://localhost:3000/books?title=Harry
+
+ค้นหาเฉพาะ หมวดหนังสือ
+http://localhost:3000/books?category=Dystopian
+
+ค้นหาเฉพาะ ผู้แต่ง
+http://localhost:3000/books?author=Rowling
+
+ค้นหาจาก ชื่อสมาชิกที่เคยยืมหนังสือ
+http://localhost:3000/books?member=John
+
+
+
+3️⃣ Books – ค้นหาแบบหลายเงื่อนไข (AND)
+Route: /books
+Method: GET
+
+หมวด Fantasy และผู้แต่ง Rowling
+http://localhost:3000/books?category=Fantasy&author=Rowling
+
+ชื่อหนังสือ "Harry" และสมาชิกที่เคยยืม "John"
+http://localhost:3000/books?title=Harry&member=John // 👈 "message": "❌ There is no book you are looking for."
+
+
+
+4️⃣ Books – Advanced Search + Pagination
+Route: /books
+Method: GET
+
+หมวด Fantasy, หน้า 1, 5 เล่มต่อหน้า
+http://localhost:3000/books?category=Fantasy&pageNo=1&pageSize=5
+
+ผู้แต่ง Dan, หน้า 1, 3 เล่มต่อหน้า
+http://localhost:3000/books?author=Dan&pageNo=1&pageSize=3

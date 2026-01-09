@@ -1,5 +1,5 @@
 import express from "express";
-import { bookService } from "./services/bookService";
+import bookRoutes from "./routes/bookRoutes"
 import { authorService } from "./services/authorService";
 import { memberService } from "./services/memberService";
 import { borrowService } from "./services/borrowService";
@@ -13,28 +13,10 @@ app.get("/", (req, res) => {
   res.send("📚 Library API is running");
 });
 
-////////////////////////////////////// - - - Api  - - - //////////////////////////////////////
 
-// ======== 📚 Books ========
-app.get("/books", async (req, res) => {
-  const { title } = req.query;
 
-  if (title && typeof title === "string") {
-    const books = await bookService.searchByTitleService(title);
-
-    if (books.length != 0) {
-      res.json(books);
-    } else {
-      res.status(404).json("❌ There is no book you are looking for.");
-    }
-  } else {
-    const books = await bookService.getAllBooksService();
-
-    res.json(books);
-  }
-});
-
-/////////////////////////////////////////////////////////////////////////////////
+// ===== Routes =====
+app.use("/books", bookRoutes);
 
 // ======== ✍ Authors ========
 app.get("/authors", async (req, res) => {
