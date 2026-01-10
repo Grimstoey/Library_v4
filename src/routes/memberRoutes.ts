@@ -5,37 +5,20 @@ const router = Router();
 
 // ======== 👩 Members ========
 
-// ดึงสมาชิกทั้งหมด หรือค้นหาด้วยชื่อ (?name=...)
 router.get("/", async (req, res) => {
-  const { name } = req.query; // 👈 destructuring
+  const name = typeof req.query.name === "string" ? req.query.name : undefined;
 
-  /*
-    คือการบอก Express ว่า
-    👉 ถ้ามี ?name=... ใน URL เอาค่านั้นมาใช้
+  const pageNo = Number(req.query.pageNo) || 1;
+  const pageSize = Number(req.query.pageSize) || 10;
 
-    หมายเหตุ:
-    - query parameter "name" เป็นชื่อที่เราตั้งเอง
-    - ไม่เกี่ยวกับ field หรือ schema ใน prisma.schema
-  */
+  const result = await memberService.getMembersService(name, pageSize, pageNo);
 
-  if (name && typeof name === "string") {
-    const members = await memberService.getByNameService(name);
+  res.setHeader("X-Total-Count", result.totalCount.toString());
 
-    if (members.length !== 0) {
-      return res.json(members);
-    }
-
-    return res.status(404).json({
-      message: "❌ The member you are looking for is not listed.",
-    });
-  }
-
-  // ถ้าไม่ส่ง query มา → ดึงทั้งหมด
-  const members = await memberService.getAllMembersService();
-  res.json(members);
+  res.json(result.data);
 });
 
-// ดึงสมาชิกด้วยรหัส (path param)
+// ค้นหาด้วย member code
 router.get("/:code", async (req, res) => {
   const member = await memberService.getByCodeService(req.params.code);
 
