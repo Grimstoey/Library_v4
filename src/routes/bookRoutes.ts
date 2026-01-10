@@ -26,6 +26,9 @@ router.get("/", async (req, res) => {
       pageNo
     );
 
+     // ส่งจำนวนทั้งหมดผ่าน header
+    res.setHeader("X-Total-Count", result.totalCount.toString());
+
     if (result.books.length > 0) {
       res.json(result);
     } else {
@@ -33,6 +36,7 @@ router.get("/", async (req, res) => {
         message: "❌ There is no book you are looking for.",
       });
     }
+
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "❌ Server error" });

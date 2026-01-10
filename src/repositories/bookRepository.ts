@@ -52,6 +52,13 @@ export const bookRepository = {
       ),
     }));
 
-    return { books: booksWithBorrowers };
+
+    // จำนวนทั้งหมด
+    const totalCount = await prisma.book.count({
+      where: whereCondition,
+    });
+
+
+    return { books: booksWithBorrowers, totalCount };
   },
 };

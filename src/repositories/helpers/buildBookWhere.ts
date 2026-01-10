@@ -1,11 +1,21 @@
 import { Prisma } from "../../generated/prisma/client";
 import { BookSearchQuery } from "../../types/book-search.type";
 
+
+/* ไฟล์นี้ทำหน้าที่ สร้าง object สำหรับ Prisma .findMany({ where: ... })
+
+    👉 มันไม่ได้ query database เอง
+    👉 มันแค่ "ประกอบเงื่อนไขการค้นหา" ให้ Prisma
+
+    พูดง่าย ๆ คือ
+    รับ input จาก query → แปลงเป็น Prisma where condition
+*/
+
 export function buildBookWhere(
   query: BookSearchQuery
 ): Prisma.BookWhereInput {
 
-  const andConditions: Prisma.BookWhereInput[] = [];
+  const andConditions: Prisma.BookWhereInput[] = []; //กล่องเก็บเงื่อนไข
 
   // 🔍 ชื่อหนังสือ
   if (query.title) {
@@ -32,6 +42,18 @@ export function buildBookWhere(
     andConditions.push({
       author: {
         is: {
+          /* 
+              is ใช้กับ relation field เท่านั้น
+              เลยใช้ is เพื่อนำทางไป filter อีก table
+
+              model Book {
+                id       Int
+                title    String
+
+                authorId Int      // 👈 FK (scalar field)
+                author   Author  @relation(fields: [authorId], references: [id]) // 👈 relation field
+              }
+          */
           OR: [
             {
               firstName: {
@@ -56,6 +78,7 @@ export function buildBookWhere(
     andConditions.push({
       borrowItems: {
         some: {
+          // some คือ ขอแค่มี "อย่างน้อย 1 รายการ" ที่ตรงเงื่อนไข
           borrow: {
             member: {
               OR: [
@@ -95,6 +118,19 @@ export function buildBookWhere(
   }
 
   return {
+    //สุดท้ายเอาเงื่อนไขทั้งหมดมาครอบด้วย AND
     AND: andConditions,
+
+    /*
+    ตัวอย่าง:
+      /books?title=harry&author=rowling
+
+    จะกลายเป็น:
+      WHERE
+        title CONTAINS "harry"
+      AND
+        author.firstName OR author.lastName CONTAINS "rowling"
+
+    */
   };
 }
