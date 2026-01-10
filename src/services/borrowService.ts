@@ -1,14 +1,13 @@
 import { borrowRepository } from "../repositories/borrowRepository";
 
 export const borrowService = {
-
-    // แสดงหนังสือตามวันกำหนดคืน
-  async getBooksDueOnDateService(date: Date) {
-    return borrowRepository.getBooksDueOnDb(date);
+  // แสดงหนังสือตามวันกำหนดคืน
+  async getBooksDueOnDateService(date: Date, pageSize: number, pageNo: number) {
+    return borrowRepository.getBooksDueOnDb(date, pageSize, pageNo);
   },
 
-    // แสดงหนังสือที่ยังไม่ได้คืน
-  async getUnreturnedBooksService() {
-    return borrowRepository.getUnreturnedBooksDb();
+  // แสดงหนังสือที่ยังไม่ได้คืน
+  async getUnreturnedBooksService(pageSize: number, pageNo: number) {
+    return borrowRepository.getUnreturnedBooksDb(pageSize, pageNo);
   },
 };

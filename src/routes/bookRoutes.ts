@@ -30,7 +30,7 @@ router.get("/", async (req, res) => {
     res.setHeader("X-Total-Count", result.totalCount.toString());
 
     if (result.books.length > 0) {
-      res.json(result);
+      res.json(result.books);
     } else {
       res.status(404).json({
         message: "❌ There is no book you are looking for.",

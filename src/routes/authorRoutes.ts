@@ -12,7 +12,7 @@ router.get("/", async (req, res) => {
 
   res.setHeader("X-Total-Count", result.totalCount.toString());
 
-  res.json(result);
+  res.json(result.authors);
 });
 
 export default router;

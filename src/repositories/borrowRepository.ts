@@ -2,20 +2,24 @@ import { prisma } from "../lib/prisma";
 import { getDayRange } from "../utils/dateRangeUtils";
 
 export const borrowRepository = {
-
   // ดึงข้อมูลด้วยวันกำหนดคืนจาก db
-  async getBooksDueOnDb(date: Date) {
+  async getBooksDueOnDb(date: Date, pageSize: number = 10, pageNo: number = 1) {
     const { startOfDay, startOfNextDay } = getDayRange(date);
 
-    return prisma.borrowItem.findMany({
-      where: {
-        returnedAt: null,
-        dueDate: {
-          //dueDate ตั้งแต่ต้นวันนี้ จนถึงก่อนวันพรุ่งนี้จะเริ่ม
-          gte: startOfDay, // >=
-          lt: startOfNextDay, // <
-        },
+    const whereCondition = {
+      returnedAt: null,
+      dueDate: {
+        //dueDate ตั้งแต่ต้นวันนี้ จนถึงก่อนวันพรุ่งนี้จะเริ่ม
+        gte: startOfDay, // >=
+        lt: startOfNextDay, // <
       },
+    };
+
+    const items = await prisma.borrowItem.findMany({
+      where: whereCondition,
+      take: pageSize,
+      skip: pageSize * (pageNo - 1),
+      orderBy: { id: "asc" },
       include: {
         book: true,
         borrow: {
@@ -25,19 +29,35 @@ export const borrowRepository = {
         },
       },
     });
+
+    const totalCount = await prisma.borrowItem.count({
+      where: whereCondition,
+    });
+
+    return { data: items, totalCount };
   },
 
   // ดึงหนังสือที่ยังไม่ได้คืนจาก db
-  async getUnreturnedBooksDb() {
-    return prisma.borrowItem.findMany({
-      where: { returnedAt: null },
+  async getUnreturnedBooksDb(pageSize: number = 10, pageNo: number = 1) {
+    const whereCondition = { returnedAt: null };
+
+    const items = await prisma.borrowItem.findMany({
+      where: whereCondition,
+      take: pageSize,
+      skip: pageSize * (pageNo - 1),
+      orderBy: { id: "asc" },
       include: {
         book: { include: { author: true } },
         borrow: { include: { member: true } },
       },
     });
-  }
 
+    const totalCount = await prisma.borrowItem.count({
+      where: whereCondition,
+    });
+
+    return { data: items, totalCount };
+  },
 };
 
 /*

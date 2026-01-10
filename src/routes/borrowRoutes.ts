@@ -26,14 +26,31 @@ router.get("/due", async (req, res) => {
     });
   }
 
-  const items = await borrowService.getBooksDueOnDateService(dueDate);
-  res.json(items);
+  const pageNo = Number(req.query.pageNo) || 1;
+  const pageSize = Number(req.query.pageSize) || 10;
+
+  const result = await borrowService.getBooksDueOnDateService(
+    dueDate,
+    pageSize,
+    pageNo
+  );
+
+  res.setHeader("X-Total-Count", result.totalCount.toString());
+  res.json(result.data);
 });
 
 // หนังสือที่ยังไม่ได้คืน
 router.get("/unreturned", async (req, res) => {
-  const items = await borrowService.getUnreturnedBooksService();
-  res.json(items);
+  const pageNo = Number(req.query.pageNo) || 1;
+  const pageSize = Number(req.query.pageSize) || 10;
+
+  const result = await borrowService.getUnreturnedBooksService(
+    pageSize,
+    pageNo
+  );
+
+  res.setHeader("X-Total-Count", result.totalCount.toString());
+  res.json(result.data);
 });
 
 export default router;
